@@ -1,0 +1,35 @@
+# Python
+
+venv/
+
+backend/venv/
+
+__pycache__/
+
+*.pyc
+
+
+# Environment variables
+
+.env
+
+
+# Node
+
+node_modules/
+
+
+# Build files
+
+dist/
+
+
+# VS Code
+
+.vscode/
+
+
+# Windows
+
+Thumbs.db
+ 

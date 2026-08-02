@@ -1,0 +1,7 @@
+Earlier local frontend: http://localhost:5173/
+Earlier local backend: http://127.0.0.1:8000/docs
+Git repo : https://github.com/tapasparida18/policy-chatbot-groq-render
+Railway url: https://railway.com/dashboard
+fronend deploy details: https://vercel.com/tapas-a314/policy-chatbot-groq-render/ihCEMi9hsJcVD5mEWtfX86vEe96z
+Backend Deploy url: https://policy-chatbot-groq-render-production-ac4f.up.railway.app/docs
+actual frontend url: https://policy-chatbot-groq-render.vercel.app/
