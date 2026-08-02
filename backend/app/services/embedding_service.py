@@ -26,6 +26,8 @@ class EmbeddingService:
         return embeddings
  
     def embed_query(self, query):
+
+        start_time = time.time()    
  
         embedding = self.model.encode(
             [query],
