@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-const API_URL = "policy-chatbot-groq-render-production.up.railway.app";
+const API_URL = "https://policy-chatbot-groq-render-production.up.railway.app";
 
 
 export const getBackendMessage = async () => {
