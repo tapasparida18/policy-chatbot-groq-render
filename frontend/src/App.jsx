@@ -311,7 +311,8 @@ function App() {
                 }}
 
               >
-
+                {message.text}
+                
                 {message.role === "bot" &&
  
                  message.sources &&
@@ -330,7 +331,7 @@ function App() {
  
                   {[...new Set(
  
-                    messsage.sources.map(
+                    message.sources.map(
  
                      (source) => source.page
  
@@ -345,7 +346,8 @@ function App() {
                       onClick={() =>
                        window.open(
  
-                        `https://policy-chatbot-groq-render-production.up.railway.app/pdf#page=${page}`
+                        `https://policy-chatbot-groq-render-production.up.railway.app/pdf#page=${page}`,
+                        "_blank"
  
                       )
  
