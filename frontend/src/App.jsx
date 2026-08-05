@@ -312,48 +312,64 @@ function App() {
 
               >
 
-                {message.text}
-
                 {message.role === "bot" &&
-
+ 
                  message.sources &&
-
+ 
                  message.sources.length > 0 && (
-
-                    <div
-
-                      style={{
-
-                        marginTop: "12px"
-
-                      }}
-
-                    >
-
-                      {[...new Set(
-
-                        message.sources.map(
-                          (source) => source.page
-                        )
-                      )].map((page) => (
-
-                        <button
-                          key={page}
-                          onClick={() =>
-                            window.open(
-                              `http://127.0.0.1:8000/pdf#page=${page}`,
-                              
-                            )
-                          }
-                          style={{
-                            border: "none",
-                            background: "none",
-                            color: "#2563eb",
-                            cursor: "pointer",
-                            padding: 0,
-                            fontWeight: "bold"
-
-                          }}
+ 
+                  <div
+ 
+                   style={{
+ 
+                    marginTop: "12px"
+ 
+                  }}
+ 
+                 >
+ 
+                  {[...new Set(
+ 
+                    messsage.sources.map(
+ 
+                     (source) => source.page
+ 
+                    )
+ 
+                   )].map((page) => (
+ 
+                     <button
+ 
+                      key={page}
+ 
+                      onClick={() =>
+                       window.open(
+ 
+                        `https://policy-chatbot-groq-render-production.up.railway.app/pdf#page=${page}`
+ 
+                      )
+ 
+                     }
+ 
+                     style={{
+ 
+                      border: "none",
+ 
+                      background: "none",
+ 
+                      color: "#2563eb",
+ 
+                      cursor: "pointer",
+ 
+                      padding: 0,
+ 
+                      fontWeight: "bold",
+ 
+                      display: "block",
+ 
+                      marginTop: "5px"
+ 
+                    }}
                         >
                           📄 View Source Page {page}
                         </button>
