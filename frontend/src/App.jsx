@@ -294,7 +294,7 @@ function App() {
 
                   lineHeight: "1.5",
 
-                  textAlign:left,
+                  textAlign:"left",
                   
                 
 
