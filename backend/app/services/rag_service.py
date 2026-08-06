@@ -1,13 +1,262 @@
 import time
 
+from difflib import get_close_matches
+
+
+
 
 from app.services.embedding_service import EmbeddingService
 
+
 from app.services.faiss_service import FAISSService
+
 
 from app.services.llm_service import LLMService
 
-#from app.services.reranker_service import RerankerService
+
+# from app.services.reranker_service import RerankerService
+
+
+
+
+def normalize_question_text(question: str) -> str:
+
+    """
+
+    Performs lightweight typo correction before embedding generation.
+
+    This improves retrieval quality for common spelling mistakes and
+
+    abbreviations without changing the RAG architecture.
+
+    """
+
+
+    correction_dictionary = {
+
+        "stndard": "standard",
+
+        "standrd": "standard",
+
+        "std": "standard",
+
+
+        "wrokng": "working",
+
+        "wrkng": "working",
+
+        "workng": "working",
+
+        "wrking": "working",
+
+
+        "hsr": "hours",
+
+        "hrs": "hours",
+
+        "hr": "hour",
+
+
+        "polcy": "policy",
+
+        "polic": "policy",
+
+        "plcy": "policy",
+
+
+        "leav": "leave",
+
+        "lev": "leave",
+
+
+        "emplyee": "employee",
+
+        "employe": "employee",
+
+        "emp": "employee",
+
+
+        "documnt": "document",
+
+        "documnet": "document",
+
+        "docs": "documents",
+
+
+        "reimbursment": "reimbursement",
+
+        "reimbrsmnt": "reimbursement",
+
+
+        "attendence": "attendance",
+
+        "attndance": "attendance",
+
+
+        "timng": "timing",
+
+        "ofice": "office",
+
+        "aproval": "approval",
+
+        "apprval": "approval"
+
+    }
+
+
+    vocabulary = [
+
+        "standard",
+
+        "working",
+
+        "hours",
+
+        "hour",
+
+        "policy",
+
+        "leave",
+
+        "employee",
+
+        "document",
+
+        "documents",
+
+        "attendance",
+
+        "reimbursement",
+
+        "holiday",
+
+        "salary",
+
+        "benefits",
+
+        "office",
+
+        "timing",
+
+        "probation",
+
+        "notice",
+
+        "conduct",
+
+        "training",
+
+        "manager",
+
+        "approval",
+
+        "remote",
+
+        "work",
+
+        "lunch",
+
+        "break",
+
+        "core"
+
+    ]
+
+
+    words = question.split()
+
+    corrected_words = []
+
+
+    for word in words:
+
+        prefix = ""
+
+        suffix = ""
+
+        actual_word = word
+
+
+        while actual_word and not actual_word[0].isalnum():
+
+            prefix += actual_word[0]
+
+            actual_word = actual_word[1:]
+
+
+        while actual_word and not actual_word[-1].isalnum():
+
+            suffix = actual_word[-1] + suffix
+
+            actual_word = actual_word[:-1]
+
+
+        clean_word = actual_word.lower()
+
+
+        if not clean_word:
+
+            corrected_words.append(word)
+
+            continue
+
+
+        if clean_word in correction_dictionary:
+
+            corrected_word = correction_dictionary[clean_word]
+
+            corrected_words.append(
+
+                f"{prefix}{corrected_word}{suffix}"
+
+            )
+
+            continue
+
+
+        if len(clean_word) >= 4:
+
+            close_matches = get_close_matches(
+
+                clean_word,
+
+                vocabulary,
+
+                n=1,
+
+                cutoff=0.82
+
+            )
+
+
+            if close_matches:
+
+                corrected_words.append(
+
+                    f"{prefix}{close_matches[0]}{suffix}"
+
+                )
+
+            else:
+
+                corrected_words.append(word)
+
+        else:
+
+            corrected_words.append(word)
+
+
+    corrected_question = " ".join(corrected_words)
+
+
+    if corrected_question != question:
+
+        print(f"[QUERY_NORMALIZATION] Original: {question}")
+
+        print(f"[QUERY_NORMALIZATION] Corrected: {corrected_question}")
+
+
+    return corrected_question
 
 
 
@@ -24,7 +273,7 @@ class RAGService:
         self.faiss_service = FAISSService()
 
 
-        #self.reranker_service = RerankerService()
+        # self.reranker_service = RerankerService()
 
 
         self.llm_service = LLMService()
@@ -49,25 +298,52 @@ class RAGService:
 
 
         total_start = time.time()
-        question_lower = question.strip().lower()
+
+
+        question = normalize_question_text(
+
+            question.strip()
+
+        )
+
+
+        question_lower = question.lower()
+
 
         if question_lower in [
+
             "hi",
-            "hello", 
-            "hey"
+
+            "hello",
+
+            "hey",
+
             "good morning",
+
             "good afternoon",
+
             "good evening",
+
             "how are you",
+
             "what's up",
+
             "how's it going",
+
             "greetings",
+
             "salutations",
+
             "hey there",
+
             "hi there",
+
             "hello there",
+
             "good day",
-            ]:
+
+        ]:
+
             return {
 
                 "answer": (
@@ -81,24 +357,32 @@ class RAGService:
                 "confidence_score": 1.0
 
             }
+
+
         if question_lower in [
+
             "thank you",
+
             "thanks",
+
             "much appreciated",
+
             "thanks a lot",
+
             "thanks so much",
+
             "thanks a ton",
+
             "thanks a million",
+
             "thanks a bunch",
+
             "thanks a heap",
+
             "thanks a load",
-            "thanks a ton",
-            "thanks a lot",
-            "thanks a million",
-            "thanks a bunch",
-            "thanks a heap",
-            "thanks a load",
+
         ]:
+
             return {
 
                 "answer": (
@@ -114,6 +398,7 @@ class RAGService:
                 "confidence_score": 1.0
 
             }
+
 
         try:
 
@@ -224,6 +509,7 @@ class RAGService:
 
             reranked_chunks = retrieved_chunks[:3]
 
+
             rerank_end = time.time()
 
 
@@ -236,11 +522,9 @@ class RAGService:
             )
 
 
-            # Prefer positive rerank scores
-
+            # Keep strongest chunks
 
             reranked_chunks = reranked_chunks[:3]
-
 
 
             if not reranked_chunks:
@@ -273,12 +557,6 @@ class RAGService:
                     "confidence_score": 0.0
 
                 }
-
-
-            # Keep strongest chunks
-
-
-            reranked_chunks = reranked_chunks[:3]
 
 
             # =============================
@@ -350,8 +628,6 @@ class RAGService:
                         ),
 
                         "rerank_score": 0,
-
-                        
 
                         "preview": chunk["text"][:250]
 
@@ -426,3 +702,4 @@ class RAGService:
                 "confidence_score": 0.0
 
             }
+ 
