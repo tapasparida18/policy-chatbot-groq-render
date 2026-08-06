@@ -8,7 +8,7 @@ from sentence_transformers import SentenceTransformer
 
 
 
-# Reduce CPU thread overhead
+# Reduce CPU thread overhead on Railway
 
 torch.set_num_threads(1)
 
@@ -37,7 +37,7 @@ class EmbeddingService:
 
         self.model.encode(
 
-            "warmup query",
+            ["warmup query"],
 
             normalize_embeddings=True,
 
@@ -84,7 +84,7 @@ class EmbeddingService:
 
             embedding = self.model.encode(
 
-                query,
+                [query],
 
                 normalize_embeddings=True,
 
@@ -103,4 +103,3 @@ class EmbeddingService:
 
 
         return embedding
- 
