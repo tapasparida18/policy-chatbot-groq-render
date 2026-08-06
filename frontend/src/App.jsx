@@ -331,7 +331,7 @@ function App() {
  
                    style={{
  
-                    marginTop: "12px"
+                    marginTop: "12px",
 
                     display: "flex",
 
