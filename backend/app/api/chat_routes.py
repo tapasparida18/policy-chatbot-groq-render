@@ -4,6 +4,8 @@ from pydantic import BaseModel
 
 from pathlib import Path
 
+import pickle
+
 
 from app.services.rag_service import RAGService
 
@@ -25,21 +27,12 @@ class ChatRequest(BaseModel):
 
 
 
-PDF_PATH = Path("app/storage/uploads/PolicyDetails.pdf")
+CHUNKS_PATH = Path("app/storage/metadata/chunks.pkl")
 
 
 
 
 def is_page_count_question(question: str) -> bool:
-
-    """
-
-    Detects questions asking about total number of pages in the uploaded PDF.
-
-    This avoids sending metadata questions to the RAG pipeline.
-
-    """
-
 
     question_lower = question.lower().strip()
 
@@ -56,13 +49,9 @@ def is_page_count_question(question: str) -> bool:
 
         "page count",
 
-        "how many pages does the document have",
-
-        "how many pages are in the document",
+        "how many page",
 
         "total number of pages"
-
-        "How many pages are there in the document?",
 
     ]
 
@@ -72,41 +61,45 @@ def is_page_count_question(question: str) -> bool:
 
 
 
-def get_pdf_page_count() -> int | None:
-
-    """
-
-    Reads the uploaded policy PDF and returns the total number of pages.
-
-    Uses the installed PDF library available in the project environment.
-
-    """
-
-
-    if not PDF_PATH.exists():
-
-        return None
-
+def get_page_count_from_chunks() -> int | None:
 
     try:
 
-        try:
+        if not CHUNKS_PATH.exists():
 
-            from pypdf import PdfReader
+            print("[PAGE_COUNT_ERROR] chunks.pkl file not found")
 
-        except ImportError:
-
-            from PyPDF2 import PdfReader
+            return None
 
 
-        reader = PdfReader(str(PDF_PATH))
+        with open(CHUNKS_PATH, "rb") as file:
 
-        return len(reader.pages)
+            chunks = pickle.load(file)
+
+
+        page_numbers = []
+
+
+        for chunk in chunks:
+
+            if isinstance(chunk, dict) and "page" in chunk:
+
+                page_numbers.append(int(chunk["page"]))
+
+
+        if not page_numbers:
+
+            print("[PAGE_COUNT_ERROR] No page numbers found in chunks.pkl")
+
+            return None
+
+
+        return max(page_numbers)
 
 
     except Exception as error:
 
-        print(f"[PAGE_COUNT_ERROR] Could not read PDF page count: {error}")
+        print(f"[PAGE_COUNT_ERROR] Could not calculate page count: {error}")
 
         return None
 
@@ -123,7 +116,7 @@ def chat(request: ChatRequest):
 
     if is_page_count_question(question):
 
-        total_pages = get_pdf_page_count()
+        total_pages = get_page_count_from_chunks()
 
 
         if total_pages is not None:
@@ -134,18 +127,18 @@ def chat(request: ChatRequest):
 
                 "sources": [],
 
-                "source_pages": []
+                "confidence_score": 1.0
 
             }
 
 
         return {
 
-            "answer": "I could not read the PDF page count right now. Please make sure the policy PDF is available in the upload folder.",
+            "answer": "I could not read the document page count right now.",
 
             "sources": [],
 
-            "source_pages": []
+            "confidence_score": 0.0
 
         }
 
