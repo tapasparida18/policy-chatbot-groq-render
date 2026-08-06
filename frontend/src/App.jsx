@@ -75,7 +75,9 @@ function App() {
 
           role: "bot",
 
-          text: response.answer,
+          text: response.answer
+            .replace(/Source:\s*Page\s*\d+/gi, "")
+            .trim(),
 
           sources: response.sources || []
 
@@ -292,13 +294,9 @@ function App() {
 
                   lineHeight: "1.5",
 
-                  textAlign:
+                  textAlign:left,
                   
-                    message.role === "bot"
-
-                      ? "center"
-                      
-                      : "left",   
+                
 
                   backgroundColor:
 
