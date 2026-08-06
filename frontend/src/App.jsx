@@ -292,6 +292,14 @@ function App() {
 
                   lineHeight: "1.5",
 
+                  textAlign:
+                  
+                    message.role === "bot"
+
+                      ? "center"
+                      
+                      : "left",   
+
                   backgroundColor:
 
                     message.role === "user"
@@ -312,7 +320,7 @@ function App() {
 
               >
                 {message.text}
-                
+
                 {message.role === "bot" &&
  
                  message.sources &&
@@ -324,6 +332,12 @@ function App() {
                    style={{
  
                     marginTop: "12px"
+
+                    display: "flex",
+
+                    flexDirection: "column",
+
+                    alignItems: "center",
  
                   }}
  
