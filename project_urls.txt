@@ -5,3 +5,8 @@ Railway url: https://railway.com/dashboard
 fronend deploy details: https://vercel.com/tapas-a314/policy-chatbot-groq-render/ihCEMi9hsJcVD5mEWtfX86vEe96z
 Backend Deploy url: https://policy-chatbot-groq-render-production-ac4f.up.railway.app/docs
 actual frontend url: https://policy-chatbot-groq-render.vercel.app/
+
+backend response check urls:
+https://policy-chatbot-groq-render-production.up.railway.app/api/chat
+https://policy-chatbot-groq-render-production.up.railway.app/docs
+https://policy-chatbot-groq-render-production.up.railway.app/health
