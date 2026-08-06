@@ -161,7 +161,7 @@ class RAGService:
 
                 query_embedding=query_embedding,
 
-                top_k=5,
+                top_k=3,
 
                 min_score=0.50
 
